@@ -8,6 +8,9 @@ import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.SocketException;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 import java.util.Random;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -43,9 +46,19 @@ public class Server {
                 
                 System.out.println("mensaje: " + mensaje);
                 
-                Parcial parcial = controlador.recuperarPorIdTarea(mensaje);
+                List<Parcial> lParcial = controlador.recuperarPorIdEstudiante(mensaje);
+                
+                String resultado = "";
+                Iterator<Parcial> it = lParcial.iterator();
+                while(it.hasNext()){
+                    Parcial parcial = it.next();
+                    resultado += "Lugar: " + parcial.getBloque().getCodigo() + " - " + parcial.getSalon().getCodigo() + " Hora: " + parcial.getFecha() + " \n";
+                }
+                
+                datoSalida = (resultado).getBytes();
+                /*Parcial parcial = controlador.recuperarPorIdTarea(mensaje);
 
-                datoSalida = ("Lugar: " + parcial.getBloque().getCodigo() + " - " + parcial.getSalon().getCodigo() + " Hora: " + parcial.getFecha()).getBytes();
+                datoSalida = ("Lugar: " + parcial.getBloque().getCodigo() + " - " + parcial.getSalon().getCodigo() + " Hora: " + parcial.getFecha()).getBytes();*/
 
                 salida = new DatagramPacket(datoSalida, datoSalida.length, entrada.getAddress(), entrada.getPort());
                 conexion.send(salida);

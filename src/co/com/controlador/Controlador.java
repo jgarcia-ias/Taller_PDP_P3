@@ -10,6 +10,8 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import co.com.entidad.*;
 import co.com.util.Conexion;
+import java.util.ArrayList;
+import java.util.List;
 
 
 
@@ -21,10 +23,11 @@ import co.com.util.Conexion;
 public class Controlador {
    private final String tabla = "PARCIAL";
  
-   public Parcial recuperarPorIdEstudiante(String id_estudiante) throws SQLException, ClassNotFoundException {
+   public List<Parcial> recuperarPorIdEstudiante(String id_estudiante) throws SQLException, ClassNotFoundException {
       System.out.println("recuperarPorIdEstudiante");
       Parcial parcial = null;
       Connection conexion = Conexion.obtener();
+      List lParciales = new ArrayList();
       try{
          PreparedStatement consulta = conexion.prepareStatement("SELECT * FROM  " + this.tabla + " WHERE ESTUDIENTEPARCIAL = ?" );
          consulta.setString(1, id_estudiante);
@@ -41,17 +44,19 @@ public class Controlador {
              estudiante.setId(resultado.getString("ESTUDIENTEPARCIAL"));
              
             parcial = new Parcial(resultado.getString("IDPARCIAL"), asignatura, estudiante, bloque, salon, resultado.getString("FECHA"), resultado.getString("NOTA"));
+            lParciales.add(parcial);
          }
       }catch(SQLException ex){
          throw new SQLException(ex);
       }
-      return parcial;
+      return lParciales;
    }
    
     public Parcial recuperarPorIdTarea(String id_parcial) throws SQLException, ClassNotFoundException {
       System.out.println("recuperarPorIdTarea");
       Parcial parcial = null;
       Connection conexion = Conexion.obtener();
+      List lParciales = new ArrayList();
       try{
          PreparedStatement consulta = conexion.prepareStatement("SELECT * FROM " + this.tabla + " WHERE IDPARCIAL = ?" );
          consulta.setString(1, id_parcial);
