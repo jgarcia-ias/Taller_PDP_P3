@@ -3,12 +3,10 @@ package co.com.server;
 import co.com.controlador.Controlador;
 import co.com.entidad.Parcial;
 import java.io.IOException;
-import static java.lang.Thread.yield;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.SocketException;
 import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Random;
@@ -43,18 +41,22 @@ public class Server {
                 entrada = new DatagramPacket(datoEntrada, datoEntrada.length);
                 conexion.receive(entrada);
                 mensaje = new String(entrada.getData(), 0, entrada.getLength());
-                
+
                 System.out.println("mensaje: " + mensaje);
-                
-                List<Parcial> lParcial = controlador.recuperarPorIdEstudiante(mensaje);
-                
+
+                List<Parcial> lParcial = controlador.recuperarInformacion(mensaje);
+
                 String resultado = "";
-                Iterator<Parcial> it = lParcial.iterator();
-                while(it.hasNext()){
-                    Parcial parcial = it.next();
-                    resultado += "Lugar: " + parcial.getBloque().getCodigo() + " - " + parcial.getSalon().getCodigo() + " Hora: " + parcial.getFecha() + " \n";
+                if (lParcial.isEmpty()) {
+                    resultado = "NO SE ENCUENTRARON RESULTADOS";
+                } else {
+                    Iterator<Parcial> it = lParcial.iterator();
+                    while (it.hasNext()) {
+                        Parcial parcial = it.next();
+                        resultado += parcial.getBloque().getCodigo() + parcial.getSalon().getCodigo() + "/" + parcial.getFecha() + "_\n";
+                    }
                 }
-                
+                System.out.println(resultado);
                 datoSalida = (resultado).getBytes();
                 /*Parcial parcial = controlador.recuperarPorIdTarea(mensaje);
 
