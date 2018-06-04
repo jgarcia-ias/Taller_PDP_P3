@@ -28,17 +28,22 @@ public class Controlador {
         String[] parts = clientMessage.split("-");
         String inputType = parts[0];
         String input = parts[1];
-        List response = new ArrayList();
+        List<Parcial> response = new ArrayList();
         try {
             if (COMBO_CODE_VALUES.equals(inputType)) {
-                Parcial parcial = recuperarPorIdTarea(input);
-                response.add(parcial);
+                response = recuperarPorIdTarea(input);
             } else {
                 response = recuperarPorIdEstudiante(input);
             }
         } catch (ClassNotFoundException | SQLException e) {
             System.out.println(e.getMessage());
         }
+
+        if (0 == response.size()) {
+            Parcial parcial = generateObjectError();
+            response.add(parcial);
+        }
+
         return response;
     }
 
@@ -71,16 +76,19 @@ public class Controlador {
         return lParciales;
     }
 
-    public Parcial recuperarPorIdTarea(String id_parcial) throws SQLException, ClassNotFoundException {
+    public List<Parcial> recuperarPorIdTarea(String id_parcial) throws SQLException, ClassNotFoundException {
         System.out.println("recuperarPorIdTarea");
         Parcial parcial = null;
         Connection conexion = Conexion.obtener();
         List lParciales = new ArrayList();
         try {
-            PreparedStatement consulta = conexion.prepareStatement("SELECT * FROM " + this.tabla + " WHERE IDPARCIAL = ?");
+            PreparedStatement consulta = conexion.prepareStatement("SELECT * FROM " + this.tabla + " WHERE ASIGNATURAPARCIAL = ?");
             consulta.setString(1, id_parcial);
             ResultSet resultado = consulta.executeQuery();
             while (resultado.next()) {
+                int count = 0;
+                System.out.println("contador " + count);
+                count++;
                 Asignatura asignatura = new Asignatura();
                 Bloque bloque = new Bloque();
                 Estudiante estudiante = new Estudiante();
@@ -92,10 +100,26 @@ public class Controlador {
                 estudiante.setId(resultado.getString("ESTUDIENTEPARCIAL"));
 
                 parcial = new Parcial(resultado.getString("IDPARCIAL"), asignatura, estudiante, bloque, salon, resultado.getString("FECHA"), resultado.getString("NOTA"));
+                lParciales.add(parcial);
             }
         } catch (SQLException ex) {
             throw new SQLException(ex);
         }
+        return lParciales;
+    }
+
+    public Parcial generateObjectError() {
+        Bloque bloque = new Bloque();
+        Estudiante estudiate = new Estudiante();
+        Asignatura asignatura = new Asignatura();
+        Salon salon = new Salon();
+
+        bloque.setCodigo("-1");
+        salon.setCodigo("-1");
+        estudiate.setId("-1");
+        asignatura.setId("-1");
+
+        Parcial parcial = new Parcial("-1", asignatura, estudiate, bloque, salon, "", "");
         return parcial;
     }
 

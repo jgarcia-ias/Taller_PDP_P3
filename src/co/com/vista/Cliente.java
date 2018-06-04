@@ -85,6 +85,11 @@ public class Cliente extends javax.swing.JFrame {
                 jTextField1ActionPerformed(evt);
             }
         });
+        jTextField1.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyTyped(java.awt.event.KeyEvent evt) {
+                jTextField1KeyTyped(evt);
+            }
+        });
 
         jButton1.setText("Buscar");
         jButton1.addActionListener(new java.awt.event.ActionListener() {
@@ -165,6 +170,13 @@ public class Cliente extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_jButton1ActionPerformed
 
+    private void jTextField1KeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_jTextField1KeyTyped
+        char car = evt.getKeyChar();
+        if ((car < '0' || car > '9') && (car < ',' || car > '.')) {
+            evt.consume();
+        }
+    }//GEN-LAST:event_jTextField1KeyTyped
+
     public void sendMessage(String inputType, String input) {
         try {
             InetAddress IP = InetAddress.getByName("localHost");
@@ -180,7 +192,6 @@ public class Cliente extends javax.swing.JFrame {
 
             System.out.println("- - - - - -Inicializando cliente- - - - - - - - - - -  ");
             System.out.println("- - - - - - - - - - - - - - - - - - - - - - - - - - -  ");
-            System.out.println("Numero de documento: 1234567890001 \n");
 
             conexion = new DatagramSocket();
             datoSalida = (inputType + "-" + input).getBytes();
@@ -192,14 +203,18 @@ public class Cliente extends javax.swing.JFrame {
             mensaje = new String(entrada.getData(), 0, entrada.getLength());
             System.out.println("Servidor:  " + mensaje + "\n");
 
-            String[] parts = mensaje.split("_");
-            for (int i = 0; i < parts.length; i++) {
-                String part = parts[i];
-                String[] sets = part.split("/");
-                for (int j = 0; j < sets.length; j++) {
-                    String set = sets[j];
-                    String loquesea = sets[j];
-                    jTable1.setValueAt(set, i, j);
+            if ("-1".equals(mensaje)) {
+                JOptionPane.showMessageDialog(null, "No se encontro información para los parametros enviados.");
+            } else {
+                String[] parts = mensaje.split("_");
+                for (int i = 0; i < parts.length; i++) {
+                    String part = parts[i];
+                    String[] sets = part.split("/");
+                    for (int j = 0; j < sets.length; j++) {
+                        String set = sets[j];
+                        String loquesea = sets[j];
+                        jTable1.setValueAt(set, i, j);
+                    }
                 }
             }
 

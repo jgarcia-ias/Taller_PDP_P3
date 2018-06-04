@@ -47,8 +47,8 @@ public class Server {
                 List<Parcial> lParcial = controlador.recuperarInformacion(mensaje);
 
                 String resultado = "";
-                if (lParcial.isEmpty()) {
-                    resultado = "NO SE ENCUENTRARON RESULTADOS";
+                if ("-1".equals(lParcial.get(0).getId())) {
+                    resultado = "-1";
                 } else {
                     Iterator<Parcial> it = lParcial.iterator();
                     while (it.hasNext()) {
