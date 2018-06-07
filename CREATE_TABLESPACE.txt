@@ -1,0 +1,13 @@
+CREATE TABLESPACE parciales LOGGING
+DATAFILE 'C:\BD\parciales.dbf' size 1024M
+extent management local segment space management auto; 
+
+create user root profile default
+identified by 123
+default tablespace parciales 
+temporary tablespace temp
+account unlock; 
+
+--permisos
+
+grant connect, resource,dba to root;
